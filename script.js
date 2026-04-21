@@ -15,7 +15,7 @@ const second = 1000,
   minute = second * 60,
   hour = minute * 60,
   day = hour * 24;
-let countDown = new Date('Apr 23, 2026 00:00:00').getTime(),
+let countDown = new Date('Apr 23, 2025 00:00:00').getTime(),
   x = setInterval(function () {
     let now = new Date().getTime(),
       distance = countDown - now;
@@ -25,7 +25,6 @@ let countDown = new Date('Apr 23, 2026 00:00:00').getTime(),
       document.getElementById('seconds').innerText = Math.floor((distance % (minute)) / second);
 
     if (distance < 0) {
-
       timer.classList.add('d-none');
       confetti();
       clearInterval(x);
@@ -34,12 +33,32 @@ let countDown = new Date('Apr 23, 2026 00:00:00').getTime(),
 
   }, second)
 
-const _slideSatu = function () {
+// ── Helper: buat/tampilkan ulang elemen #tap ──────────────────────────────────
+function showTap() {
+  let tap = document.getElementById('tap');
+  if (!tap) {
+    tap = document.createElement('p');
+    tap.id = 'tap';
+    tap.className = 'animate__animated animate__pulse text-muted animate__slow animate__repeat-3';
+    tap.textContent = 'Ketuk untuk melanjutkan';
+    document.getElementById('content').appendChild(tap);
+  }
+  tap.classList.remove('d-none');
+  return tap;
+}
+
+function hideTap() {
   const tap = document.getElementById('tap');
+  if (tap) tap.classList.add('d-none');
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+
+const _slideSatu = function () {
   const slideSatu = document.getElementById('slideSatu');
   slideSatu.classList.remove('d-none');
   setTimeout(function () {
-    tap.classList.remove('d-none');
+    const tap = showTap();
     document.body.addEventListener('click', function () {
       _slideDua();
     }, { once: true });
@@ -48,12 +67,11 @@ const _slideSatu = function () {
 
 const _slideDua = function () {
   const slideSatu = document.getElementById('slideSatu');
-  const tap = document.getElementById('tap');
+  hideTap();
   const slideDua = document.getElementById('slideDua');
 
   setTimeout(function () {
     slideSatu.classList.replace('animate__slideInDown', 'animate__backOutDown');
-    tap.classList.add('d-none');
     setTimeout(function () {
       slideSatu.classList.add('d-none');
     }, 1000);
@@ -61,11 +79,11 @@ const _slideDua = function () {
 
   slideDua.classList.remove('d-none');
   setTimeout(function () {
-    tap.classList.remove('d-none');
+    showTap();
     document.body.addEventListener('click', function () {
       slideDua.classList.replace('animate__zoomInDown', 'animate__fadeOutLeft');
       slideDua.classList.remove('animate__delay-2s', 'animate__slow');
-      tap.classList.add('d-none');
+      hideTap();
       setTimeout(function () {
         slideDua.remove();
         _slideTiga();
@@ -75,16 +93,15 @@ const _slideDua = function () {
 };
 
 const _slideTiga = function () {
-  const tap = document.getElementById('tap');
   const slideTiga = document.getElementById('slideTiga');
 
   slideTiga.classList.remove('d-none');
   setTimeout(function () {
-    tap.classList.remove('d-none');
+    showTap();
     document.body.addEventListener('click', function () {
       slideTiga.classList.remove('animate__delay-2s', 'animate__slow');
       slideTiga.classList.replace('animate__zoomInDown', 'animate__fadeOut');
-      tap.remove();
+      hideTap();
       setTimeout(function () {
         slideTiga.remove();
         _slideEmpat();
@@ -94,23 +111,42 @@ const _slideTiga = function () {
 }
 
 const _slideEmpat = function () {
-  const tap = document.getElementById('tap');
   const slideEmpat = document.getElementById('slideEmpat');
 
   slideEmpat.classList.remove('d-none');
   setTimeout(function () {
-    tap.classList.remove('d-none');
+    showTap();
     document.body.addEventListener('click', function () {
       slideEmpat.classList.remove('animate__delay-2s', 'animate__slow');
       slideEmpat.classList.replace('animate__fadeInRight', 'animate__fadeOut');
-      tap.remove();
+      hideTap();
       setTimeout(function () {
         slideEmpat.remove();
-        _slideLima();
+        _slideFoto();
       }, 1000);
     }, { once: true });
   }, 43000);
 }
+
+// ── Slide Foto ────────────────────────────────────────────────────────────────
+const _slideFoto = function () {
+  const slideFoto = document.getElementById('slideFoto');
+  slideFoto.classList.remove('d-none');
+
+  setTimeout(function () {
+    showTap();
+    document.body.addEventListener('click', function () {
+      hideTap();
+      slideFoto.classList.add('animate__animated', 'animate__fadeOutUp');
+      setTimeout(function () {
+        slideFoto.remove();
+        _slideLima();
+      }, 800);
+    }, { once: true });
+  }, 2000);
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
 
 function getRandomPosition(element) {
   var x = document.body.offsetHeight - element.clientHeight;
@@ -128,19 +164,18 @@ const _slideLima = function () {
   btn[0].addEventListener('click', function () {
     var xy = getRandomPosition(slideLima);
     slideLima.style.top = xy[0] + 'px';
-    // slideLima.style.left = xy[1] + 'px';
   });
 
   btn[1].addEventListener('click', function () {
     slideLima.classList.replace('animate__fadeInDown', 'animate__bounceOut');
     slideLima.classList.remove('animate__delay-2s');
     setTimeout(function () {
-      slideLima.remove()
+      slideLima.remove();
       setTimeout(() => {
         _slideEnam();
       }, 500);
     }, 1000);
-  })
+  });
 };
 
 const _slideEnam = function () {
@@ -153,7 +188,7 @@ const _slideEnam = function () {
   }, 1000);
 
   slideEnam.addEventListener('animationend', () => {
-    slideEnam.classList.add('animate__delay-3s')
+    slideEnam.classList.add('animate__delay-3s');
     slideEnam.classList.replace('animate__bounceIn', 'animate__fadeOut');
     trims.classList.add('animate__animated', 'animate__fadeOut', 'animate__delay-3s');
     setTimeout(() => {
@@ -165,6 +200,45 @@ const _slideEnam = function () {
     }, 6000);
   });
 };
+
+// ── Slide Penutup (_slideTujuh) ───────────────────────────────────────────────
+const _slideTujuh = function () {
+  // Buat elemen slide penutup secara dinamis
+  const slideTujuh = document.createElement('div');
+  slideTujuh.id = 'slideTujuh';
+  slideTujuh.className = 'slide-penutup animate__animated animate__fadeIn';
+  slideTujuh.innerHTML = `
+    <div class="penutup-card animate__animated animate__zoomIn animate__delay-1s">
+      <div class="penutup-bunga-row">
+        <span class="pb pb1">🌸</span>
+        <span class="pb pb2">🌷</span>
+        <span class="pb pb3">🌸</span>
+      </div>
+      <h2 class="penutup-judul">for you, always.</h2>
+      <p class="penutup-teks">
+        makasih udah mau baca semuanya sampai sini 🤍<br>
+        semoga harimu seindah senyum kamu,<br>
+        dan semoga kamu selalu bahagia, hari ini dan seterusnya.
+      </p>
+      <div class="penutup-divider"></div>
+      <p class="penutup-dari">with love,<br><span class="penutup-nama-pengirim">dari yang selalu ada buat kamu 🤍</span></p>
+      <div class="penutup-hearts-row">
+        <span class="ph ph1">🤍</span>
+        <span class="ph ph2">Your Future</span>
+        <span class="ph ph3">🤍</span>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('content').appendChild(slideTujuh);
+
+  // Confetti lagi sebagai penutup yang meriah
+  setTimeout(() => {
+    confetti();
+  }, 800);
+};
+// ─────────────────────────────────────────────────────────────────────────────
+
 
 new TypeIt("#teks1", {
   strings: [
@@ -219,7 +293,6 @@ new TypeIt("#trims", {
 var onlyOnKonami = false;
 
 function confetti() {
-  // Globals
   var $window = $(window),
     random = Math.random,
     cos = Math.cos,
@@ -230,14 +303,13 @@ function confetti() {
     frame = undefined,
     confetti = [];
 
-  var runFor = 2000
-  var isRunning = true
+  var runFor = 2000;
+  var isRunning = true;
 
   setTimeout(() => {
-    isRunning = false
+    isRunning = false;
   }, runFor);
 
-  // Settings
   var konami = [38, 38, 40, 40, 37, 39, 37, 39, 66, 65],
     pointer = 0;
 
@@ -255,66 +327,36 @@ function confetti() {
     dThetaMax = .7 - dThetaMin;
 
   var colorThemes = [
-    function () {
-      return color(200 * random() | 0, 200 * random() | 0, 200 * random() | 0);
-    },
-    function () {
-      var black = 200 * random() | 0;
-      return color(200, black, black);
-    },
-    function () {
-      var black = 200 * random() | 0;
-      return color(black, 200, black);
-    },
-    function () {
-      var black = 200 * random() | 0;
-      return color(black, black, 200);
-    },
-    function () {
-      return color(200, 100, 200 * random() | 0);
-    },
-    function () {
-      return color(200 * random() | 0, 200, 200);
-    },
-    function () {
-      var black = 256 * random() | 0;
-      return color(black, black, black);
-    },
-    function () {
-      return colorThemes[random() < .5 ? 1 : 2]();
-    },
-    function () {
-      return colorThemes[random() < .5 ? 3 : 5]();
-    },
-    function () {
-      return colorThemes[random() < .5 ? 2 : 4]();
-    }
+    function () { return color(200 * random() | 0, 200 * random() | 0, 200 * random() | 0); },
+    function () { var black = 200 * random() | 0; return color(200, black, black); },
+    function () { var black = 200 * random() | 0; return color(black, 200, black); },
+    function () { var black = 200 * random() | 0; return color(black, black, 200); },
+    function () { return color(200, 100, 200 * random() | 0); },
+    function () { return color(200 * random() | 0, 200, 200); },
+    function () { var black = 256 * random() | 0; return color(black, black, black); },
+    function () { return colorThemes[random() < .5 ? 1 : 2](); },
+    function () { return colorThemes[random() < .5 ? 3 : 5](); },
+    function () { return colorThemes[random() < .5 ? 2 : 4](); }
   ];
 
   function color(r, g, b) {
     return 'rgb(' + r + ',' + g + ',' + b + ')';
   }
 
-  // Cosine interpolation
   function interpolation(a, b, t) {
     return (1 - cos(PI * t)) / 2 * (b - a) + a;
   }
 
-  // Create a 1D Maximal Poisson Disc over [0, 1]
   var radius = 1 / eccentricity,
     radius2 = radius + radius;
 
   function createPoisson() {
-    // domain is the set of points which are still available to pick from
-    // D = union{ [d_i, d_i+1] | i is even }
     var domain = [radius, 1 - radius],
       measure = 1 - radius2,
       spline = [0, 1];
     while (measure) {
       var dart = measure * random(),
         i, l, interval, a, b, c, d;
-
-      // Find where dart lies
       for (i = 0, l = domain.length, measure = 0; i < l; i += 2) {
         a = domain[i], b = domain[i + 1], interval = b - a;
         if (dart < measure + interval) {
@@ -324,26 +366,18 @@ function confetti() {
         measure += interval;
       }
       c = dart - radius, d = dart + radius;
-
       for (i = domain.length - 1; i > 0; i -= 2) {
         l = i - 1, a = domain[l], b = domain[i];
-        // c---d          c---d  Do nothing
-        //   c-----d  c-----d    Move interior
-        //   c--------------d    Delete interval
-        //         c--d          Split interval
-        //       a------b
         if (a >= c && a < d)
-          if (b > d) domain[l] = d; // Move interior (Left case)
-          else domain.splice(l, 2); // Delete interval
+          if (b > d) domain[l] = d;
+          else domain.splice(l, 2);
         else if (a < c && b > c)
-          if (b <= d) domain[i] = c; // Move interior (Right case)
-          else domain.splice(i, 0, c, d); // Split interval
+          if (b <= d) domain[i] = c;
+          else domain.splice(i, 0, c, d);
       }
-
       for (i = 0, l = domain.length, measure = 0; i < l; i += 2)
         measure += domain[i + 1] - domain[i];
     }
-
     return spline.sort();
   }
 
@@ -356,7 +390,6 @@ function confetti() {
   container.style.overflow = 'visible';
   container.style.zIndex = '9999';
 
-  // Confetto constructor
   function Confetto(theme) {
     this.frame = 0;
     this.outer = document.createElement('div');
@@ -371,24 +404,18 @@ function confetti() {
     innerStyle.width = '100%';
     innerStyle.height = '100%';
     innerStyle.backgroundColor = theme();
-
     outerStyle.perspective = '50px';
     outerStyle.transform = 'rotate(' + (360 * random()) + 'deg)';
-    this.axis = 'rotate3D(' +
-      cos(360 * random()) + ',' +
-      cos(360 * random()) + ',0,';
+    this.axis = 'rotate3D(' + cos(360 * random()) + ',' + cos(360 * random()) + ',0,';
     this.theta = 360 * random();
     this.dTheta = dThetaMin + dThetaMax * random();
     innerStyle.transform = this.axis + this.theta + 'deg)';
-
     this.x = $window.width() * random();
     this.y = -deviation;
     this.dx = sin(dxThetaMin + dxThetaMax * random());
     this.dy = dyMin + dyMax * random();
     outerStyle.left = this.x + 'px';
     outerStyle.top = this.y + 'px';
-
-    // Create the periodic spline
     this.splineX = createPoisson();
     this.splineY = [];
     for (var i = 1, l = this.splineX.length - 1; i < l; ++i)
@@ -400,19 +427,13 @@ function confetti() {
       this.x += this.dx * delta;
       this.y += this.dy * delta;
       this.theta += this.dTheta * delta;
-
-      // Compute spline and convert to polar
-      var phi = this.frame % 7777 / 7777,
-        i = 0,
-        j = 1;
+      var phi = this.frame % 7777 / 7777, i = 0, j = 1;
       while (phi >= this.splineX[j]) i = j++;
       var rho = interpolation(
-        this.splineY[i],
-        this.splineY[j],
+        this.splineY[i], this.splineY[j],
         (phi - this.splineX[i]) / (this.splineX[j] - this.splineX[i])
       );
       phi *= PI2;
-
       outerStyle.left = this.x + rho * cos(phi) + 'px';
       outerStyle.top = this.y + rho * sin(phi) + 'px';
       innerStyle.transform = this.axis + this.theta + 'deg)';
@@ -420,50 +441,32 @@ function confetti() {
     };
   }
 
-
   function poof() {
     if (!frame) {
-      // Append the container
       document.body.appendChild(container);
-
-      // Add confetti
-
       var theme = colorThemes[onlyOnKonami ? colorThemes.length * random() | 0 : 0],
         count = 0;
-
       (function addConfetto() {
-
-        if (onlyOnKonami && ++count > particles)
-          return timer = undefined;
-
+        if (onlyOnKonami && ++count > particles) return timer = undefined;
         if (isRunning) {
           var confetto = new Confetto(theme);
           confetti.push(confetto);
-
           container.appendChild(confetto.outer);
           timer = setTimeout(addConfetto, spread * random());
         }
       })(0);
-
-
-      // Start the loop
       var prev = undefined;
       requestAnimationFrame(function loop(timestamp) {
         var delta = prev ? timestamp - prev : 0;
         prev = timestamp;
         var height = $window.height();
-
         for (var i = confetti.length - 1; i >= 0; --i) {
           if (confetti[i].update(height, delta)) {
             container.removeChild(confetti[i].outer);
             confetti.splice(i, 1);
           }
         }
-
-        if (timer || confetti.length)
-          return frame = requestAnimationFrame(loop);
-
-        // Cleanup
+        if (timer || confetti.length) return frame = requestAnimationFrame(loop);
         document.body.removeChild(container);
         frame = undefined;
       });
@@ -471,13 +474,8 @@ function confetti() {
   }
 
   $window.keydown(function (event) {
-    pointer = konami[pointer] === event.which ?
-      pointer + 1 :
-      +(event.which === konami[0]);
-    if (pointer === konami.length) {
-      pointer = 0;
-      poof();
-    }
+    pointer = konami[pointer] === event.which ? pointer + 1 : +(event.which === konami[0]);
+    if (pointer === konami.length) { pointer = 0; poof(); }
   });
 
   if (!onlyOnKonami) poof();
